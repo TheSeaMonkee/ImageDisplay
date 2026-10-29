@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../ImageDisplayApp/Native/*.cs" />
+    <Compile Include="../ImageDisplayApp/Replica/*.cs" />
+    <Compile Include="../ImageDisplayApp/ViewGeometry.cs" />
+    <Compile Include="../ImageDisplayApp/AppCommands.cs" />
+    <Compile Include="../ImageDisplayApp/Settings/*.cs" />
+  </ItemGroup>
+</Project>
