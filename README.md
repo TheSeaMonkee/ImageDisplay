@@ -1,4 +1,5 @@
-# Image Display (v4): a game overlay for map plans
+# Image Display (v4): an overlay for games
+###### by ur favorite vibecoder
 
 Put map plans over a game: a **live clone of another window** (Miro, Figma, WinTAK, a browser tab...) and/or a
 **transparent PNG**, floating over the game, click-through, with global hotkeys.
