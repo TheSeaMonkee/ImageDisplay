@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- Shown in the exe's file properties -->
+    <Product>Image Display</Product>
+    <Description>Overlay for map plans: live window replica, image overlay, global hotkeys.</Description>
+    <Authors>SeaMonkee; Claude (Anthropic)</Authors>
+    <Copyright>Copyright (c) 2026 SeaMonkee. Portions Copyright (c) Lorenz Cuno Klopfenstein 2010 (OnTopReplica, MS-RL).</Copyright>
+    <Version>4.0.2</Version>
+  </PropertyGroup>
+
+  <!-- Ship the license texts next to the exe (the MS-RL requires its text to accompany the compiled program). -->
+  <ItemGroup>
+    <None Update="LICENSE-OnTopReplica.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\LICENSE')" />
+    <None Include="..\NOTICE.md" Link="NOTICE.md" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\NOTICE.md')" />
+  </ItemGroup>
+
+</Project>

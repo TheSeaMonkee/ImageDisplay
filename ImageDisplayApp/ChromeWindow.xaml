@@ -1,0 +1,144 @@
+<!--
+  SPDX-License-Identifier: MIT
+  Copyright (c) 2026 SeaMonkee. Developed by SeaMonkee and Claude (Anthropic).
+-->
+<Window x:Class="ImageDisplayApp.ChromeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Image Display controls" Width="200" Height="100"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" ShowActivated="False">
+
+    <Window.Resources>
+        <!-- Small flat button used in the toolbar -->
+        <Style x:Key="ToolBtn" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#55FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#88FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Same look, but stays highlighted while checked (Top) -->
+        <Style x:Key="ToolToggle" TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#55FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#CC3B82F6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- This window is only shown in edit mode. It is laid exactly over the overlay and has a 8px frame of resize
+         handles around a surface that moves the overlay when dragged. -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="8"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="8"/>
+        </Grid.RowDefinitions>
+
+        <!-- Surface: drag to move, right-click for the menu -->
+        <Border Grid.Row="1" Grid.Column="1" Background="#01000000" Cursor="SizeAll"
+                MouseLeftButtonDown="Surface_MouseDown" MouseMove="Drag_MouseMove"
+                MouseLeftButtonUp="Drag_MouseUp" MouseRightButtonUp="Surface_RightClick">
+            <Grid>
+                <TextBlock x:Name="statusText" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           TextAlignment="Left" TextWrapping="Wrap" Margin="24" Foreground="#CCFFFFFF"
+                           FontSize="13" IsHitTestVisible="False"/>
+
+                <Border x:Name="toolbar" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="6" Padding="2" CornerRadius="5" Background="#B3000000" Cursor="Arrow">
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="btnOpen" Content="Open" Style="{StaticResource ToolBtn}"
+                                ToolTip="Open an image to lay over the window" Click="Open_Click"/>
+                        <Button x:Name="btnClear" Content="Clear" Style="{StaticResource ToolBtn}"
+                                ToolTip="Remove the overlay image" Click="Clear_Click"/>
+                        <Button x:Name="btnClone" Content="Clone &#x25BE;" Style="{StaticResource ToolBtn}"
+                                ToolTip="Clone another window" Click="Clone_Click"/>
+                        <Button x:Name="btnInteract" Content="Interact" Style="{StaticResource ToolBtn}"
+                                ToolTip="Bring the real cloned window to the front to use it (Ctrl+Alt+I to send it back)"
+                                Click="Interact_Click"/>
+                        <ToggleButton x:Name="btnTop" Content="Top" Style="{StaticResource ToolToggle}"
+                                      ToolTip="Keep above other windows (needed to show over a game)" Click="Top_Click"/>
+                        <Button x:Name="btnMore" Content="&#x22EF;" Style="{StaticResource ToolBtn}"
+                                ToolTip="More options" Click="More_Click"/>
+                        <Button x:Name="btnView" Content="View" Style="{StaticResource ToolBtn}"
+                                ToolTip="Switch to view mode: hide these controls and let the mouse pass through (Ctrl+Alt+E brings them back)"
+                                Click="View_Click"/>
+                        <Button x:Name="btnClose" Content="&#x2715;" Style="{StaticResource ToolBtn}"
+                                ToolTip="Close the app" Click="Close_Click"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Edges -->
+        <Border Grid.Row="0" Grid.Column="1" Tag="T" Background="#01000000" Cursor="SizeNS"
+                MouseLeftButtonDown="Handle_MouseDown" MouseMove="Drag_MouseMove" MouseLeftButtonUp="Drag_MouseUp"/>
+        <Border Grid.Row="2" Grid.Column="1" Tag="B" Background="#01000000" Cursor="SizeNS"
+                MouseLeftButtonDown="Handle_MouseDown" MouseMove="Drag_MouseMove" MouseLeftButtonUp="Drag_MouseUp"/>
+        <Border Grid.Row="1" Grid.Column="0" Tag="L" Background="#01000000" Cursor="SizeWE"
+                MouseLeftButtonDown="Handle_MouseDown" MouseMove="Drag_MouseMove" MouseLeftButtonUp="Drag_MouseUp"/>
+        <Border Grid.Row="1" Grid.Column="2" Tag="R" Background="#01000000" Cursor="SizeWE"
+                MouseLeftButtonDown="Handle_MouseDown" MouseMove="Drag_MouseMove" MouseLeftButtonUp="Drag_MouseUp"/>
+
+        <!-- Corners (visible grips) -->
+        <Border Grid.Row="0" Grid.Column="0" Tag="TL" Background="#E6FFFFFF" BorderBrush="#99000000" BorderThickness="1" Cursor="SizeNWSE"
+                MouseLeftButtonDown="Handle_MouseDown" MouseMove="Drag_MouseMove" MouseLeftButtonUp="Drag_MouseUp"/>
+        <Border Grid.Row="0" Grid.Column="2" Tag="TR" Background="#E6FFFFFF" BorderBrush="#99000000" BorderThickness="1" Cursor="SizeNESW"
+                MouseLeftButtonDown="Handle_MouseDown" MouseMove="Drag_MouseMove" MouseLeftButtonUp="Drag_MouseUp"/>
+        <Border Grid.Row="2" Grid.Column="0" Tag="BL" Background="#E6FFFFFF" BorderBrush="#99000000" BorderThickness="1" Cursor="SizeNESW"
+                MouseLeftButtonDown="Handle_MouseDown" MouseMove="Drag_MouseMove" MouseLeftButtonUp="Drag_MouseUp"/>
+        <Border Grid.Row="2" Grid.Column="2" Tag="BR" Background="#E6FFFFFF" BorderBrush="#99000000" BorderThickness="1" Cursor="SizeNWSE"
+                MouseLeftButtonDown="Handle_MouseDown" MouseMove="Drag_MouseMove" MouseLeftButtonUp="Drag_MouseUp"/>
+
+        <!-- Outline so the edit-mode frame is visible -->
+        <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3" IsHitTestVisible="False"
+                BorderBrush="#B0FFFFFF" BorderThickness="1"/>
+    </Grid>
+</Window>

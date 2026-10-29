@@ -1,0 +1,16 @@
+<!--
+  SPDX-License-Identifier: MIT
+  Copyright (c) 2026 SeaMonkee. Developed by SeaMonkee and Claude (Anthropic).
+-->
+<Window x:Class="ImageDisplayApp.ImageOverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Image Display overlay" Width="100" Height="100"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" ShowActivated="False"
+        IsHitTestVisible="False">
+
+    <!-- Draws the overlay image with per-pixel transparency, above the cloned window. The window itself is
+         click-through and never takes focus (set in code), so clicks fall through to the replica underneath. -->
+    <Image x:Name="image" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+</Window>
